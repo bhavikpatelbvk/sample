@@ -1,0 +1,619 @@
+{
+	"info": {
+		"_postman_id": "a0ac010e-7505-4805-997c-a464d3d8dec9",
+		"name": "ASM amount of checks",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26583805"
+	},
+	"item": [
+		{
+			"name": "All checks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Created by Christian Backström",
+							"// Created date: 2021-11-01",
+							"// Last update: 2022-02-16",
+							"// Revision: 1.3",
+							"// Update Notes: rewrote the script to only work for one customer",
+							"//",
+							"//",
+							"// Required params in asm: ",
+							"// apiAddress (api-wpm, api-wpm2, api-asm-us1)",
+							"// authTicket (authticket to customer)",
+							"// returnCheckType (options are 'zebratester', 'browser', 'url', 'all', 'ping', 'port', 'postman', 'basic', 'advanced', 'dac', 'urlxi', 'enabledchecks', 'disabledchecks', 'manualchecks', 'intervalchecks', 'informationalchecks', 'warningchecks', 'errorchecks', 'fatalchecks', 'disabledpercentage', 'enabledpercentage', 'fatalpercentage', 'errorpercentage', 'warningpercentage', 'informationalpercentage', 'manualpercentage', 'intervalpercentage', 'enabledDacChecks', 'enabledStandardChecks', 'enabledAdvancedChecks', 'disabledDacChecks', 'disabledStandardChecks', 'disabledAdvancedChecks')",
+							"//",
+							"// Does not support counting of DNS checks checks yet",
+							"",
+							"",
+							"",
+							"",
+							"var jsonData = pm.response.json();",
+							"pm.collectionVariables.set(\"TotalChecks\", jsonData.length);",
+							"var returnValue = null;",
+							"",
+							"pm.test(\"Response must be valid and have a json body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"     pm.expect(pm.response.text()).to.include(\"guid\");",
+							"     pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json\\; charset=utf-8');",
+							"});",
+							"",
+							"",
+							"",
+							"pm.collectionVariables.set(\"ZebratesterChecks\", totalCounter(\"Prx\", \"type\"));",
+							"var urlChecks = totalCounter(\"UrlXnet\", \"type\");",
+							"urlChecks += totalCounter(\"Url\", \"type\");",
+							"pm.collectionVariables.set(\"urlChecks\", urlChecks);",
+							"pm.collectionVariables.set(\"BrowserChecks\", totalCounter(\"FprXnet\", \"type\"));",
+							"pm.collectionVariables.set(\"PingChecks\", totalCounter(\"Ping\", \"type\"));",
+							"pm.collectionVariables.set(\"PortChecks\", totalCounter(\"Port\", \"type\"));",
+							"pm.collectionVariables.set(\"PostmanChecks\", totalCounter(\"Postman\", \"name\"));",
+							"pm.collectionVariables.set(\"DacChecks\", totalCounter(\"Dac\", \"type\"));",
+							"pm.collectionVariables.set(\"URLXiChecks\", totalCounter(\"Url-Xi\", \"name\"));",
+							"pm.collectionVariables.set(\"SSL_DNSChecks\", totalCounter(\"CmdXnetTemplated\", \"type\"));",
+							"pm.collectionVariables.set(\"CompoundChecks\", totalCounter(\"CmdTemplated\", \"type\"));",
+							"pm.collectionVariables.set(\"EnabledChecks\", totalCounter(\"true\", \"enabledtrue\"));",
+							"pm.collectionVariables.set(\"DisabledChecks\", totalCounter(\"false\", \"enabledfalse\"));",
+							"pm.collectionVariables.set(\"ManualChecks\", totalCounter(\"false\", \"intervalmanual\"));",
+							"pm.collectionVariables.set(\"IntervalChecks\", totalCounter(\"true\", \"interval\"));",
+							"pm.collectionVariables.set(\"InformationalChecks\", totalCounter(\"I\", \"severity\"));",
+							"pm.collectionVariables.set(\"WarningChecks\", totalCounter(\"W\", \"severity\"));",
+							"pm.collectionVariables.set(\"ErrorChecks\", totalCounter(\"E\", \"severity\"));",
+							"pm.collectionVariables.set(\"FatalChecks\", totalCounter(\"F\", \"severity\"));",
+							"pm.collectionVariables.set(\"DisabledPercent\", Math.trunc((pm.collectionVariables.get(\"DisabledChecks\") / pm.collectionVariables.get(\"TotalChecks\")) * 100));",
+							"pm.collectionVariables.set(\"EnabledPercent\", Math.trunc((pm.collectionVariables.get(\"EnabledChecks\") / pm.collectionVariables.get(\"TotalChecks\")) * 100));",
+							"pm.collectionVariables.set(\"ErrorPercent\", Math.trunc((pm.collectionVariables.get(\"ErrorChecks\") / pm.collectionVariables.get(\"TotalChecks\")) * 100));",
+							"pm.collectionVariables.set(\"FatalPercent\", Math.trunc((pm.collectionVariables.get(\"FatalChecks\") / pm.collectionVariables.get(\"TotalChecks\")) * 100));",
+							"pm.collectionVariables.set(\"WarningPercent\", Math.trunc((pm.collectionVariables.get(\"WarningChecks\") / pm.collectionVariables.get(\"TotalChecks\")) * 100));",
+							"pm.collectionVariables.set(\"InformationalPercent\", Math.trunc((pm.collectionVariables.get(\"InformationalChecks\") / pm.collectionVariables.get(\"TotalChecks\")) * 100));",
+							"pm.collectionVariables.set(\"ManualPercentage\", Math.trunc((pm.collectionVariables.get(\"ManualChecks\") / pm.collectionVariables.get(\"TotalChecks\")) * 100));",
+							"pm.collectionVariables.set(\"IntervalPercentage\", Math.trunc((pm.collectionVariables.get(\"IntervalChecks\") / pm.collectionVariables.get(\"TotalChecks\")) * 100));",
+							"",
+							"//URL-xi and Postman are apparently also CmdXnetTemplated checks so we need to discount them from SSL and DNS checks:",
+							"pm.collectionVariables.set(\"SSL_DNSChecks\", Number(pm.collectionVariables.get(\"SSL_DNSChecks\")) - (Number(pm.collectionVariables.get(\"PostmanChecks\")) + Number(pm.collectionVariables.get(\"URLXiChecks\"))));",
+							"",
+							"pm.collectionVariables.set(\"BasicChecks\", Number(pm.collectionVariables.get(\"PingChecks\")) + Number(pm.collectionVariables.get(\"PortChecks\"))  + Number(pm.collectionVariables.get(\"urlChecks\")) + Number(pm.collectionVariables.get(\"SSL_DNSChecks\")) + Number(pm.collectionVariables.get(\"CompoundChecks\")));",
+							"pm.collectionVariables.set(\"AdvancedChecks\", Number(pm.collectionVariables.get(\"BrowserChecks\")) + Number(pm.collectionVariables.get(\"ZebratesterChecks\")) + Number(pm.collectionVariables.get(\"PostmanChecks\")) + Number(pm.collectionVariables.get(\"URLXiChecks\")));",
+							"",
+							"",
+							"",
+							"",
+							"tests[\"Total amount of checks: \"  + pm.collectionVariables.get(\"TotalChecks\")] = true;",
+							"tests[\"Total amount of Advanced checks \"  + pm.collectionVariables.get(\"AdvancedChecks\")] = true;",
+							"tests[\"Total amount of Basic checks: \"  + pm.collectionVariables.get(\"BasicChecks\")] = true;",
+							"tests[\"Zebratester checks: \"  + pm.collectionVariables.get(\"ZebratesterChecks\")] = true;",
+							"tests[\"URL checks: \"  + pm.collectionVariables.get(\"urlChecks\")] = true;",
+							"tests[\"Browser checks: \"  + pm.collectionVariables.get(\"BrowserChecks\")] = true;",
+							"tests[\"Port checks: \"  + pm.collectionVariables.get(\"PortChecks\")] = true;",
+							"tests[\"Ping checks: \"  + pm.collectionVariables.get(\"PingChecks\")] = true;",
+							"tests[\"Postman checks: \"  + pm.collectionVariables.get(\"PostmanChecks\")] = true;",
+							"tests[\"DAC checks: \"  + pm.collectionVariables.get(\"DacChecks\")] = true;",
+							"tests[\"URL-Xi checks: \"  + pm.collectionVariables.get(\"URLXiChecks\")] = true;",
+							"tests[\"SSL and DNS checks: \"  + pm.collectionVariables.get(\"SSL_DNSChecks\")] = true;",
+							"tests[\"Compound checks: \"  + pm.collectionVariables.get(\"CompoundChecks\")] = true;",
+							"tests[\"Enabled checks: \"  + pm.collectionVariables.get(\"EnabledChecks\")] = true;",
+							"tests[\"Disabled checks: \"  + pm.collectionVariables.get(\"DisabledChecks\")] = true;",
+							"tests[\"Manual checks: \"  + pm.collectionVariables.get(\"ManualChecks\")] = true;",
+							"tests[\"Interval checks: \"  + pm.collectionVariables.get(\"IntervalChecks\")] = true;",
+							"tests[\"Informational checks: \"  + pm.collectionVariables.get(\"InformationalChecks\")] = true;",
+							"tests[\"Warning checks: \"  + pm.collectionVariables.get(\"WarningChecks\")] = true;",
+							"tests[\"Error checks: \"  + pm.collectionVariables.get(\"ErrorChecks\")] = true;",
+							"tests[\"Fatal checks: \"  + pm.collectionVariables.get(\"FatalChecks\")] = true;",
+							"tests[\"Disabled percentage: \"  + pm.collectionVariables.get(\"DisabledPercent\")] = true;",
+							"tests[\"Enabled percentage: \"  + pm.collectionVariables.get(\"EnabledPercent\")] = true;",
+							"tests[\"Error percentage: \"  + pm.collectionVariables.get(\"ErrorPercent\")] = true;",
+							"tests[\"Fatal percentage: \"  + pm.collectionVariables.get(\"FatalPercent\")] = true;",
+							"tests[\"Warning percentage: \"  + pm.collectionVariables.get(\"WarningPercent\")] = true;",
+							"tests[\"Informational percentage: \"  + pm.collectionVariables.get(\"InformationalPercent\")] = true;",
+							"tests[\"Manual percentage: \"  + pm.collectionVariables.get(\"ManualPercentage\")] = true;",
+							"tests[\"Interval percentage: \"  + pm.collectionVariables.get(\"IntervalPercentage\")] = true;",
+							"",
+							"",
+							"if (pm.environment.get(\"returnCheckType\") == \"all\"){",
+							"    returnValue = pm.collectionVariables.get(\"TotalChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"browser\"){",
+							"    returnValue = pm.collectionVariables.get(\"BrowserChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"zebratester\"){",
+							"    returnValue = pm.collectionVariables.get(\"ZebratesterChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"url\"){",
+							"    returnValue = pm.collectionVariables.get(\"urlChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"port\"){",
+							"    returnValue = pm.collectionVariables.get(\"PortChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"ping\"){",
+							"    returnValue = pm.collectionVariables.get(\"PingChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"postman\"){",
+							"    returnValue = pm.collectionVariables.get(\"PostmanChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"basic\"){",
+							"    returnValue = pm.collectionVariables.get(\"BasicChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"advanced\"){",
+							"    returnValue = pm.collectionVariables.get(\"AdvancedChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"dac\"){",
+							"    returnValue = pm.collectionVariables.get(\"DacChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"urlxi\"){",
+							"    returnValue = pm.collectionVariables.get(\"URLXiChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"enabledchecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"EnabledChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"disabledchecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"DisabledChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"manualchecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"ManualChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"intervalchecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"IntervalChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"informationalchecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"InformationalChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"errorchecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"ErrorChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"warningchecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"WarningChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"fatalchecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"FatalChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"disabledpercentage\"){",
+							"    returnValue = pm.collectionVariables.get(\"DisabledPercent\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"enabledpercentage\"){",
+							"    returnValue = pm.collectionVariables.get(\"EnabledPercent\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"errorpercentage\"){",
+							"    returnValue = pm.collectionVariables.get(\"ErrorPercent\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"fatalpercentage\"){",
+							"    returnValue = pm.collectionVariables.get(\"FatalPercent\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"warningpercentage\"){",
+							"    returnValue = pm.collectionVariables.get(\"WarningPercent\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"informationalpercentage\"){",
+							"    returnValue = pm.collectionVariables.get(\"InformationalPercent\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"manualpercentage\"){",
+							"    returnValue = pm.collectionVariables.get(\"ManualPercentage\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"intervalpercentage\"){",
+							"    returnValue = pm.collectionVariables.get(\"IntervalPercentage\");",
+							"} ",
+							"",
+							"if (returnValue != null){",
+							"    pm.collectionVariables.set(\"_Apica_ReturnValue\", returnValue);",
+							"    pm.collectionVariables.set(\"_Apica_ReturnUnit\", \"st\");",
+							"}",
+							"",
+							"",
+							"",
+							"",
+							"function totalCounter(searchstring, arraysearch){",
+							"    if (arraysearch == \"type\"){",
+							"        var current = jsonData.filter(value => value.check_type === searchstring).length;",
+							"    } else if (arraysearch == \"name\"){",
+							"        var current = jsonData.filter(value => value.check_type_name === searchstring).length;",
+							"    } else if (arraysearch == \"enabledtrue\"){",
+							"        var current = jsonData.filter(value => value.enabled == true).length;",
+							"    } else if (arraysearch == \"enabledfalse\"){",
+							"        var current = jsonData.filter(value => value.enabled == false).length;",
+							"    } else if (arraysearch == \"intervalmanual\"){",
+							"        var current = jsonData.filter(value => value.interval_seconds == 0).length;",
+							"    } else if (arraysearch == \"interval\"){",
+							"        var current = jsonData.filter(value => value.interval_seconds > 0).length;",
+							"    } else if (arraysearch == \"severity\"){",
+							"        var current = jsonData.filter(value => value.severity === searchstring).length;",
+							"    }",
+							"    return current;",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const items = ['zebratester', 'browser', 'url', 'all', 'ping', 'port', 'postman', 'basic', 'advanced', 'dac', 'urlxi', 'enabledchecks', 'disabledchecks', 'manualchecks', 'intervalchecks', 'informationalchecks', 'warningchecks', 'errorchecks', 'fatalchecks', 'disabledpercentage', 'enabledpercentage', 'fatalpercentage', 'errorpercentage', 'warningpercentage', 'informationalpercentage', 'manualpercentage', 'intervalpercentage', 'enabledDacChecks', 'enabledStandardChecks', 'enabledAdvancedChecks', 'disabledDacChecks', 'disabledStandardChecks', 'disabledAdvancedChecks'];",
+							"//const matches = items.filter(s => s.includes(pm.environment.get(\"returnCheckType\")));",
+							"/*if(matches.length <= 0){",
+							"    throw new Error(\"You haven't specified a correct return type\");",
+							"}*/",
+							"pm.expect(items).to.contain(pm.environment.get(\"returnCheckType\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{apiAddress}}.apica.io/v3/Checks/?auth_ticket={{authTicket}}&customer_context=1",
+					"protocol": "https",
+					"host": [
+						"{{apiAddress}}",
+						"apica",
+						"io"
+					],
+					"path": [
+						"v3",
+						"Checks",
+						""
+					],
+					"query": [
+						{
+							"key": "auth_ticket",
+							"value": "{{authTicket}}"
+						},
+						{
+							"key": "customer_context",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Disabled Checks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response must be valid and have a json body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"     pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json\\; charset=utf-8');",
+							"});",
+							"",
+							"var returnValue = null;",
+							"var jsonData = pm.response.json();",
+							"var standardchecks = 0;",
+							"var advancedchecks = 0;",
+							"var dacchecks = jsonData.filter(value => value.check_type === \"Dac\").length;",
+							"pm.collectionVariables.set(\"disabledDacChecks\", dacchecks);",
+							"",
+							"standardchecks += jsonData.filter(value => value.check_type === \"UrlXnet\").length;",
+							"standardchecks += jsonData.filter(value => value.check_type === \"Url\").length;",
+							"standardchecks += jsonData.filter(value => value.check_type === \"Ping\").length;",
+							"standardchecks += jsonData.filter(value => value.check_type === \"Port\").length;",
+							"standardchecks += jsonData.filter(value => value.check_type === \"CmdXnetTemplated\").length;",
+							"standardchecks -= jsonData.filter(value => value.check_type_name === \"Postman\").length;",
+							"standardchecks += jsonData.filter(value => value.check_type === \"CmdTemplated\").length;",
+							"pm.collectionVariables.set(\"disabledStandardChecks\", standardchecks);",
+							"",
+							"advancedchecks += jsonData.filter(value => value.check_type === \"Prx\").length;",
+							"advancedchecks += jsonData.filter(value => value.check_type === \"FprXnet\").length;",
+							"advancedchecks += jsonData.filter(value => value.check_type_name === \"Postman\").length;",
+							"advancedchecks += jsonData.filter(value => value.check_type_name === \"Url-Xi\").length;",
+							"pm.collectionVariables.set(\"disabledAdvancedChecks\", advancedchecks);",
+							"",
+							"",
+							"tests[\"Disabled Dac Checks: \"  + pm.collectionVariables.get(\"disabledDacChecks\")] = true;",
+							"tests[\"Disabled Standard Checks: \"  + pm.collectionVariables.get(\"disabledStandardChecks\")] = true;",
+							"tests[\"Disabled Advanced Checks: \"  + pm.collectionVariables.get(\"disabledAdvancedChecks\")] = true;",
+							"",
+							"",
+							"if (pm.environment.get(\"returnCheckType\") == \"disabledDacChecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"disabledDacChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"disabledStandardChecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"disabledStandardChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"disabledAdvancedChecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"disabledAdvancedChecks\");",
+							"}",
+							"",
+							"",
+							"if (returnValue != null){",
+							"    pm.collectionVariables.set(\"_Apica_ReturnValue\", returnValue);",
+							"    pm.collectionVariables.set(\"_Apica_ReturnUnit\", \"st\");",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"filter\": {\n    \"enabled\": false\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{apiAddress}}.apica.io/v3/checks?auth_ticket={{authTicket}}&customer_context=1",
+					"protocol": "https",
+					"host": [
+						"{{apiAddress}}",
+						"apica",
+						"io"
+					],
+					"path": [
+						"v3",
+						"checks"
+					],
+					"query": [
+						{
+							"key": "auth_ticket",
+							"value": "{{authTicket}}"
+						},
+						{
+							"key": "customer_context",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Enabled Checks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response must be valid and have a json body\", function () {",
+							"     pm.response.to.be.ok;",
+							"     pm.response.to.be.withBody;",
+							"     pm.response.to.be.json;",
+							"     pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json\\; charset=utf-8');",
+							"});",
+							"",
+							"var returnValue = null;",
+							"var jsonData = pm.response.json();",
+							"var standardchecks = 0;",
+							"var advancedchecks = 0;",
+							"var dacchecks = jsonData.filter(value => value.check_type === \"Dac\").length;",
+							"pm.collectionVariables.set(\"enabledDacChecks\", dacchecks);",
+							"",
+							"standardchecks += jsonData.filter(value => value.check_type === \"UrlXnet\").length;",
+							"standardchecks += jsonData.filter(value => value.check_type === \"Url\").length;",
+							"standardchecks += jsonData.filter(value => value.check_type === \"Ping\").length;",
+							"standardchecks += jsonData.filter(value => value.check_type === \"Port\").length;",
+							"standardchecks += jsonData.filter(value => value.check_type === \"CmdXnetTemplated\").length;",
+							"standardchecks -= jsonData.filter(value => value.check_type_name === \"Postman\").length;",
+							"standardchecks += jsonData.filter(value => value.check_type === \"CmdTemplated\").length;",
+							"",
+							"pm.collectionVariables.set(\"enabledStandardChecks\", standardchecks);",
+							"",
+							"advancedchecks += jsonData.filter(value => value.check_type === \"Prx\").length;",
+							"advancedchecks += jsonData.filter(value => value.check_type === \"FprXnet\").length;",
+							"advancedchecks += jsonData.filter(value => value.check_type_name === \"Postman\").length;",
+							"advancedchecks += jsonData.filter(value => value.check_type_name === \"Url-Xi\").length;",
+							"pm.collectionVariables.set(\"enabledAdvancedChecks\", advancedchecks);",
+							"",
+							"",
+							"tests[\"Enabled Dac Checks: \"  + pm.collectionVariables.get(\"enabledDacChecks\")] = true;",
+							"tests[\"Enabled Standard Checks: \"  + pm.collectionVariables.get(\"enabledStandardChecks\")] = true;",
+							"tests[\"Enabled Advanced Checks: \"  + pm.collectionVariables.get(\"enabledAdvancedChecks\")] = true;",
+							"",
+							"",
+							"if (pm.environment.get(\"returnCheckType\") == \"enabledDacChecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"enabledDacChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"enabledStandardChecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"enabledStandardChecks\");",
+							"} else if (pm.environment.get(\"returnCheckType\") == \"enabledAdvancedChecks\"){",
+							"    returnValue = pm.collectionVariables.get(\"enabledAdvancedChecks\");",
+							"}",
+							"",
+							"if (returnValue != null){",
+							"    pm.collectionVariables.set(\"_Apica_ReturnValue\", returnValue);",
+							"    pm.collectionVariables.set(\"_Apica_ReturnUnit\", \"st\");",
+							"}",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"filter\": {\n    \"enabled\": true\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{apiAddress}}.apica.io/v3/checks?auth_ticket={{authTicket}}&customer_context=1",
+					"protocol": "https",
+					"host": [
+						"{{apiAddress}}",
+						"apica",
+						"io"
+					],
+					"path": [
+						"v3",
+						"checks"
+					],
+					"query": [
+						{
+							"key": "auth_ticket",
+							"value": "{{authTicket}}"
+						},
+						{
+							"key": "customer_context",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "_Apica_ReturnValue",
+			"value": ""
+		},
+		{
+			"key": "_Apica_ReturnUnit",
+			"value": ""
+		},
+		{
+			"key": "returnCheckType",
+			"value": ""
+		},
+		{
+			"key": "TotalChecks",
+			"value": ""
+		},
+		{
+			"key": "ZebratesterChecks",
+			"value": ""
+		},
+		{
+			"key": "urlChecks",
+			"value": ""
+		},
+		{
+			"key": "BrowserChecks",
+			"value": ""
+		},
+		{
+			"key": "PingChecks",
+			"value": ""
+		},
+		{
+			"key": "PortChecks",
+			"value": ""
+		},
+		{
+			"key": "PostmanChecks",
+			"value": ""
+		},
+		{
+			"key": "DacChecks",
+			"value": ""
+		},
+		{
+			"key": "URLXiChecks",
+			"value": ""
+		},
+		{
+			"key": "EnabledChecks",
+			"value": ""
+		},
+		{
+			"key": "DisabledChecks",
+			"value": ""
+		},
+		{
+			"key": "ManualChecks",
+			"value": ""
+		},
+		{
+			"key": "IntervalChecks",
+			"value": ""
+		},
+		{
+			"key": "InformationalChecks",
+			"value": ""
+		},
+		{
+			"key": "WarningChecks",
+			"value": ""
+		},
+		{
+			"key": "ErrorChecks",
+			"value": ""
+		},
+		{
+			"key": "FatalChecks",
+			"value": ""
+		},
+		{
+			"key": "DisabledPercent",
+			"value": ""
+		},
+		{
+			"key": "EnabledPercent",
+			"value": ""
+		},
+		{
+			"key": "ErrorPercent",
+			"value": ""
+		},
+		{
+			"key": "FatalPercent",
+			"value": ""
+		},
+		{
+			"key": "WarningPercent",
+			"value": ""
+		},
+		{
+			"key": "InformationalPercent",
+			"value": ""
+		},
+		{
+			"key": "ManualPercentage",
+			"value": ""
+		},
+		{
+			"key": "IntervalPercentage",
+			"value": ""
+		},
+		{
+			"key": "BasicChecks",
+			"value": ""
+		},
+		{
+			"key": "AdvancedChecks",
+			"value": ""
+		},
+		{
+			"key": "disabledDacChecks",
+			"value": ""
+		},
+		{
+			"key": "disabledStandardChecks",
+			"value": ""
+		},
+		{
+			"key": "disabledAdvancedChecks",
+			"value": ""
+		},
+		{
+			"key": "enabledDacChecks",
+			"value": ""
+		},
+		{
+			"key": "enabledStandardChecks",
+			"value": ""
+		},
+		{
+			"key": "enabledAdvancedChecks",
+			"value": ""
+		},
+		{
+			"key": "SSL_DNSChecks",
+			"value": ""
+		},
+		{
+			"key": "CompoundChecks",
+			"value": ""
+		}
+	]
+}
