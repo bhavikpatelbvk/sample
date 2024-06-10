@@ -13,7 +13,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"var res = {\"ApiName\":\"Photo Inspection Api\",\"ApiStatus\":\"Healthy\",\"ApiTotalDuration\":\"00:00:01.2363662\",\"Components\":[",
+							"var res = {\"ApiName\":\"Photo Inspection Api\",\"ApiStatus\":\"Unhealthy\",\"ApiTotalDuration\":\"00:00:01.2363662\",\"Components\":[",
 							"    {\"ComponentName\":\"Stargate\",\"ComponentStatus\":\"Healthy\",\"ComponentDuration\":\"00:00:00.1046241\",\"Comment\":null},",
 							"    {\"ComponentName\":\"Yellow Pages\",\"ComponentStatus\":\"Healthy\",\"ComponentDuration\":\"00:00:01.2346786\",\"Comment\":null},",
 							"    {\"ComponentName\":\"LaunchDarkly\",\"ComponentStatus\":\"Healthy\",\"ComponentDuration\":\"00:00:00.0000369\",\"Comment\":null},",
