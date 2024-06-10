@@ -147,7 +147,6 @@
 							"    returnValue = pm.collectionVariables.get(\"InformationalChecks\");",
 							"} else if (pm.environment.get(\"returnCheckType\") == \"errorchecks\"){",
 							"    returnValue = pm.collectionVariables.get(\"ErrorChecks\");",
-							"    pm.collectionVariables.set(\"_Apica_Message\", \"error message custom\");",
 							"} else if (pm.environment.get(\"returnCheckType\") == \"warningchecks\"){",
 							"    returnValue = pm.collectionVariables.get(\"WarningChecks\");",
 							"} else if (pm.environment.get(\"returnCheckType\") == \"fatalchecks\"){",
@@ -173,6 +172,7 @@
 							"if (returnValue != null){",
 							"    pm.collectionVariables.set(\"_Apica_ReturnValue\", returnValue);",
 							"    pm.collectionVariables.set(\"_Apica_ReturnUnit\", \"st\");",
+							"    pm.collectionVariables.set(\"_Apica_Message\", \"error message custom\");",
 							"}",
 							"",
 							"",
@@ -275,6 +275,10 @@
 		},
 		{
 			"key": "_Apica_ReturnUnit",
+			"value": ""
+		},
+		{
+			"key": "_Apica_Message",
 			"value": ""
 		},
 		{
