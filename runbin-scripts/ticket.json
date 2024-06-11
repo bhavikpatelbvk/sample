@@ -14,7 +14,7 @@
 					"script": {
 						"exec": [
 							"var res = {\"ApiName\":\"Photo Inspection Api\",\"ApiStatus\":\"Healthy\",\"ApiTotalDuration\":\"00:00:01.2363662\",\"Components\":[",
-							"    {\"ComponentName\":\"Stargate\",\"ComponentStatus\":\"Healthy\",\"ComponentDuration\":\"00:00:00.1046241\",\"Comment\":null},",
+							"    {\"ComponentName\":\"Stargate\",\"ComponentStatus\":\"unHealthy\",\"ComponentDuration\":\"00:00:00.1046241\",\"Comment\":null},",
 							"    {\"ComponentName\":\"Yellow Pages\",\"ComponentStatus\":\"Healthy\",\"ComponentDuration\":\"00:00:01.2346786\",\"Comment\":null},",
 							"    {\"ComponentName\":\"LaunchDarkly\",\"ComponentStatus\":\"Healthy\",\"ComponentDuration\":\"00:00:00.0000369\",\"Comment\":null},",
 							"    {\"ComponentName\":\"PartnerDirectory\",\"ComponentStatus\":\"Healthy\",\"ComponentDuration\":\"00:00:00.2204359\",\"Comment\":null},",
@@ -40,9 +40,11 @@
 							"if (unhealthyComponents.length == 0) {  ",
 							"    resultmessage = \"All components are healthy!\"",
 							"} else {",
-							"    resultmessage = \"Components that are not healthy: \"",
+							"    resultmessage = \"Components that are not healthy:\n \"",
+							"    var index = 0;"
 							"    for (var component of unhealthyComponents){",
-							"        resultmessage += component + \", \"",
+							"       resultmessage += "#${index + 1}: ${component.ComponentName} - ${component.ComponentStatus} with ${component.ComponentDuration}\n\"",
+							"	index += 1"
 							"    }",
 							"    resultmessage = resultmessage.substring(0, resultmessage.length - 2)",
 							"}",
