@@ -47,9 +47,9 @@
 						            "if (unhealthyComponents.length == 0) {",
 						            "    resultmessage = \"All components are healthy!\";",
 						            "} else {",
-						            "    resultmessage = \"Components that are not healthy:\\n\";",
+						            "    resultmessage = \"Components that are not healthy:\\r\\n\";",
 						            "    for (var j = 0; j < unhealthyComponents.length; j++) {",
-						            "        resultmessage += \"#\" + (j + 1) + \": \" + unhealthyComponents[j] + \"\\n\";",
+						            "        resultmessage += \"#\" + (j + 1) + \": \" + unhealthyComponents[j] + \"\\r\\n\";",
 						            "    }",
 						            "}",
 						            "",
@@ -61,13 +61,11 @@
 						            "console.log(resultmessage);",
 						            "console.log(resultValue);",
 						            "",
-						            "pm.test(\"All components are healthy\", function() {",
-						            "    pm.expect(unhealthyComponents.length).to.equal(0);",
-						            "});",
-						            "",
-						            "pm.test(\"Some components are unhealthy\", function() {",
-						            "    pm.expect(unhealthyComponents.length).to.be.above(0);",
-						            "});"
+						            "if (unhealthyComponents.length > 0) {",
+						            "    tests[\"Some components unhealthy!\"] = false;",
+						            "} else {",
+						            "    tests[\"All components healthy!\"] = true;",
+						            "}"
 						],
 						"type": "text/javascript"
 					}
