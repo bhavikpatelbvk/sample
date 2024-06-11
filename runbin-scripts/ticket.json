@@ -62,7 +62,7 @@
 						            "console.log(resultValue);",
 						            "",
 						            "if (unhealthyComponents.length > 0) {",
-						            "    tests[\"Some components unhealthy!\"] = false;",
+						            "    tests[resultmessage] = false;",
 						            "} else {",
 						            "    tests[\"All components healthy!\"] = true;",
 						            "}"
