@@ -43,7 +43,7 @@
 							"    resultmessage = \"Components that are not healthy:\n \"",
 							"    var index = 0;"
 							"    for (var component of unhealthyComponents){",
-							"       resultmessage += "#${index + 1}: ${component.ComponentName} - ${component.ComponentStatus} with ${component.ComponentDuration}\n\"",
+							"       resultmessage += \"#${index + 1}: ${component.ComponentName} - ${component.ComponentStatus} with ${component.ComponentDuration}\n\"",
 							"	index += 1"
 							"    }",
 							"    resultmessage = resultmessage.substring(0, resultmessage.length - 2)",
