@@ -41,7 +41,7 @@
 							"} else {",
 							"   resultmessage = \"Components that are not healthy:\n\"",
 							"   unhealthyComponents.forEach((component, index) => {",
-							"       resultmessage += `#${index + 1}: ${component.ComponentName} - ${component.ComponentStatus} with ${component.ComponentDuration}`\n",
+							"       resultmessage += \"#${index + 1}: ${component.ComponentName} - ${component.ComponentStatus} with ${component.ComponentDuration}\n\"",
 							"   });",
 							"}",
 							"",
