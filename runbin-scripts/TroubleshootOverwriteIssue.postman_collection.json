@@ -1,0 +1,41 @@
+{
+	"info": {
+		"_postman_id": "df59845d-f64a-47c9-847e-cceb5672280e",
+		"name": "TroubleshootOverwriteIssue",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11170664"
+	},
+	"item": [
+		{
+			"name": "example.com",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var resultmessage = \"My result message\"",
+							"",
+							"pm.collectionVariables.set(\"_Apica_Message\", resultmessage);",
+							"",
+							"tests[\"Some components unhealthy!\"] = false;"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "example.com",
+					"host": [
+						"example",
+						"com"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
