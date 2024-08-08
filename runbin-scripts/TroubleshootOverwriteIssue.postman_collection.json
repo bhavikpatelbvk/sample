@@ -17,7 +17,7 @@
 							"",
 							"pm.collectionVariables.set(\"_Apica_Message\", resultmessage);",
 							"",
-							"tests[\"Some components unhealthy!\"] = true;"
+							"tests[\"Some components unhealthy!\"] = false;"
 						],
 						"type": "text/javascript",
 						"packages": {}
